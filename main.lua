@@ -1,84 +1,88 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "AFK Optimizer",
-    LoadingTitle = "Grace AFK Mode",
-    LoadingSubtitle = "Client Safe Optimizer"
+    Name = "Grace - FPS BOOSTER",
+    LoadingTitle = "Grace",
+    LoadingSubtitle = "FPS Booster"
 })
 
-local Tab = Window:CreateTab("AFK Mode", 4483362458)
+local Tab = Window:CreateTab("FPS", 4483362458)
 
-local function enableAFK()
+Tab:CreateButton({
+    Name = "HUD ve Texture Kaldır",
+    Callback = function()
 
-    local Players = game:GetService("Players")
-    local Lighting = game:GetService("Lighting")
-    local RunService = game:GetService("RunService")
-
-    local player = Players.LocalPlayer
-
-    -- UI kapat
-    for _,v in pairs(player:WaitForChild("PlayerGui"):GetChildren()) do
-        if v:IsA("ScreenGui") then
-            v.Enabled = false
-        end
-    end
-
-    -- Lighting optimize
-    Lighting.GlobalShadows = false
-    Lighting.FogEnd = 1e9
-    Lighting.Brightness = 1
-    Lighting.EnvironmentDiffuseScale = 0
-    Lighting.EnvironmentSpecularScale = 0
-
-    for _,v in pairs(Lighting:GetChildren()) do
-        if v:IsA("PostEffect") then
-            v.Enabled = false
-        end
-    end
-
-    -- FPS limit (stabil)
-    pcall(function()
-        setfpscap(30)
-    end)
-
-    -- Animation disable
-    local function disableAnimations(character)
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            local animator = humanoid:FindFirstChildOfClass("Animator")
-            if animator then
-                for _,track in pairs(animator:GetPlayingAnimationTracks()) do
-                    track:Stop()
-                end
+        -- CoreGui dışındaki ScreenGui'leri kapat
+        for _,v in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
+            if v:IsA("ScreenGui") then
+                v.Enabled = false
             end
         end
 
-        local animate = character:FindFirstChild("Animate")
-        if animate then
-            animate.Disabled = true
+        -- Texture ve Decal kaldır
+        for _,v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Texture") or v:IsA("Decal") then
+                v:Destroy()
+            end
+
+            if v:IsA("BasePart") then
+                v.Material = Enum.Material.SmoothPlastic
+                v.Reflectance = 0
+            end
         end
-    end
 
-    if player.Character then
-        disableAnimations(player.Character)
-    end
+        -- Işık efektlerini kaldır
+        local lighting = game:GetService("Lighting")
 
-    player.CharacterAdded:Connect(function(char)
-        task.wait(1)
-        disableAnimations(char)
-    end)
+        for _,v in pairs(lighting:GetChildren()) do
+            if v:IsA("BloomEffect")
+            or v:IsA("BlurEffect")
+            or v:IsA("SunRaysEffect")
+            or v:IsA("ColorCorrectionEffect")
+            or v:IsA("DepthOfFieldEffect") then
+                v:Destroy()
+            end
+        end
 
-end
-
-Tab:CreateButton({
-    Name = "Enable AFK Mode (FPS + No Animations)",
-    Callback = function()
-        enableAFK()
+        lighting.GlobalShadows = false
+        lighting.FogEnd = 100000
 
         Rayfield:Notify({
-            Title = "AFK MODE",
-            Content = "Activated successfully",
+            Title = "FPS Boost",
+            Content = "HUD ve textureler kaldırıldı.",
             Duration = 5
         })
-    end,
+    end
+})
+
+----------------------------------------------------
+-- 🔥 EKLENEN NO ANIMATION BUTONU
+----------------------------------------------------
+
+Tab:CreateButton({
+    Name = "No Animations (Local)",
+    Callback = function()
+
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            -- mevcut animasyonları durdur
+            for _,track in pairs(humanoid:GetPlayingAnimationTracks()) do
+                track:Stop()
+            end
+
+            -- yeni animasyonları engellemeye çalışır (local)
+            humanoid.AnimationPlayed:Connect(function(track)
+                track:Stop()
+            end)
+        end
+
+        Rayfield:Notify({
+            Title = "FPS Boost",
+            Content = "No Animations aktif edildi.",
+            Duration = 5
+        })
+    end
 })
