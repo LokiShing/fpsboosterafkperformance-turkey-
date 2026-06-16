@@ -83,7 +83,6 @@ Tab:CreateButton({
             Title = "FPS Boost",
             Content = "No Animations aktif edildi.",
             Duration = 5
-
         })
     end
 })
