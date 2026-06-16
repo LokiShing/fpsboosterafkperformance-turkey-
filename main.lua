@@ -83,6 +83,27 @@ Tab:CreateButton({
             Title = "FPS Boost",
             Content = "No Animations aktif edildi.",
             Duration = 5
+                    local function FullBright()
+    local Lighting = game:GetService("Lighting")
+
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 100000
+    Lighting.GlobalShadows = false
+
+    Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+
+    for _, v in pairs(Lighting:GetChildren()) do
+        if v:IsA("BloomEffect")
+        or v:IsA("BlurEffect")
+        or v:IsA("ColorCorrectionEffect")
+        or v:IsA("SunRaysEffect")
+        or v:IsA("DepthOfFieldEffect") then
+            v:Destroy()
+        end
+    end
+end
         })
     end
 })
